@@ -1,12 +1,12 @@
-
 import { GoogleGenAI, Type } from "@google/genai";
 import { GeneratedContent, Collaborator, SocialPost, AdminStats, User } from "../types";
 
-// Base URL for your backend
-const API_URL = "http://localhost:3001/api";
+// Determine API URL based on environment
+// In Vercel (Production), relative path '/api' routes to Vercel Serverless Functions
+// In Local Development, it points to the dedicated Express server on port 3001
+const API_URL = (import.meta as any).env.PROD ? '/api' : 'http://localhost:3001/api';
 
 // Initialize client-side fallback
-// This ensures the app works even if the backend server is not running
 const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
 
 /**
