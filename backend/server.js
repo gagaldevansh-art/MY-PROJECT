@@ -179,6 +179,29 @@ app.get('/api/schedule', (req, res) => {
     res.json(scheduledPosts);
 });
 
+// 6. Admin Stats (New)
+app.get('/api/admin/stats', (req, res) => {
+    res.json({
+        totalUsers: 1452,
+        totalPostsGenerated: 8932,
+        apiCallsThisMonth: 12503,
+        systemHealth: 'Healthy',
+        revenue: '$4,250'
+    });
+});
+
+// 7. Admin Users (New)
+app.get('/api/admin/users', (req, res) => {
+    const users = [
+        { id: '1', name: 'Alex Johnson', email: 'alex.j@uni.edu', role: 'Student', status: 'Active', joinedDate: '2023-09-01' },
+        { id: '2', name: 'Sarah Lee', email: 'sarah.l@tech.edu', role: 'Pro', status: 'Active', joinedDate: '2023-09-15' },
+        { id: '3', name: 'Mike Chen', email: 'mike.c@art.edu', role: 'Student', status: 'Suspended', joinedDate: '2023-10-02' },
+        { id: '4', name: 'Emily Davis', email: 'emily.d@uni.edu', role: 'Student', status: 'Active', joinedDate: '2023-10-05' },
+        { id: '5', name: 'Admin User', email: 'admin@campuscreator.com', role: 'Admin', status: 'Active', joinedDate: '2023-08-01' },
+    ];
+    res.json(users);
+});
+
 app.listen(port, () => {
   console.log(`CampusCreator Backend running at http://localhost:${port}`);
 });

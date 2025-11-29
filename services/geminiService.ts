@@ -1,6 +1,6 @@
 
 import { GoogleGenAI, Type } from "@google/genai";
-import { GeneratedContent, Collaborator, SocialPost } from "../types";
+import { GeneratedContent, Collaborator, SocialPost, AdminStats, User } from "../types";
 
 // Base URL for your backend
 const API_URL = "http://localhost:3001/api";
@@ -205,5 +205,40 @@ export const schedulePost = async (post: any): Promise<boolean> => {
     } catch (error) {
         console.warn("Backend unavailable, simulating schedule locally");
         return true;
+    }
+}
+
+/**
+ * Fetches admin statistics
+ */
+export const fetchAdminStats = async (): Promise<AdminStats> => {
+    try {
+        const response = await fetch(`${API_URL}/admin/stats`);
+        if (!response.ok) throw new Error("Backend unavailable");
+        return await response.json();
+    } catch (e) {
+        return {
+            totalUsers: 1452,
+            totalPostsGenerated: 8932,
+            apiCallsThisMonth: 12503,
+            systemHealth: 'Healthy',
+            revenue: '$4,250'
+        };
+    }
+}
+
+/**
+ * Fetches user list for admin
+ */
+export const fetchUsers = async (): Promise<User[]> => {
+    try {
+        const response = await fetch(`${API_URL}/admin/users`);
+        if (!response.ok) throw new Error("Backend unavailable");
+        return await response.json();
+    } catch (e) {
+        return [
+             { id: '1', name: 'Alex Johnson', email: 'alex.j@uni.edu', role: 'Student', status: 'Active', joinedDate: '2023-09-01' },
+             { id: '2', name: 'Sarah Lee', email: 'sarah.l@tech.edu', role: 'Pro', status: 'Active', joinedDate: '2023-09-15' },
+        ];
     }
 }

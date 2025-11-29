@@ -3,8 +3,11 @@ export enum View {
   STUDIO = 'STUDIO', // The Unique Feature
   SCHEDULE = 'SCHEDULE',
   IDEATION = 'IDEATION',
-  COLLAB = 'COLLAB'
+  COLLAB = 'COLLAB',
+  ADMIN = 'ADMIN'
 }
+
+export type UserRole = 'creator' | 'admin';
 
 export interface GeneratedContent {
   persona: string;
@@ -33,4 +36,21 @@ export interface Collaborator {
   reason: string;
   price: string;
   isPaid: boolean;
+}
+
+export interface AdminStats {
+  totalUsers: number;
+  totalPostsGenerated: number;
+  apiCallsThisMonth: number;
+  systemHealth: 'Healthy' | 'Degraded' | 'Down';
+  revenue: string;
+}
+
+export interface User {
+  id: string;
+  name: string;
+  email: string;
+  role: 'Student' | 'Pro' | 'Admin';
+  status: 'Active' | 'Suspended';
+  joinedDate: string;
 }

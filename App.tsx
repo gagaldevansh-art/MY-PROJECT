@@ -7,11 +7,24 @@ import Scheduler from './components/Scheduler';
 import Ideation from './components/Ideation';
 import CollabConnect from './components/CollabConnect';
 import Login from './components/Login';
-import { View } from './types';
+import AdminPanel from './components/AdminPanel';
+import { View, UserRole } from './types';
 
 const App: React.FC = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [userRole, setUserRole] = useState<UserRole>('creator');
   const [currentView, setCurrentView] = useState<View>(View.DASHBOARD);
+
+  const handleLogin = (role: UserRole) => {
+      setUserRole(role);
+      setIsLoggedIn(true);
+      // If admin, default to admin panel
+      if (role === 'admin') {
+          setCurrentView(View.ADMIN);
+      } else {
+          setCurrentView(View.DASHBOARD);
+      }
+  };
 
   const renderContent = () => {
     switch (currentView) {
@@ -25,23 +38,25 @@ const App: React.FC = () => {
         return <Ideation />;
       case View.COLLAB:
         return <CollabConnect />;
+      case View.ADMIN:
+        return <AdminPanel />;
       default:
         return <Dashboard setView={setCurrentView} />;
     }
   };
 
   if (!isLoggedIn) {
-    return <Login onLogin={() => setIsLoggedIn(true)} />;
+    return <Login onLogin={handleLogin} />;
   }
 
   return (
     <div className="flex h-screen bg-gray-50 overflow-hidden font-sans text-gray-900 animate-fade-in">
-      <Navigation currentView={currentView} setView={setCurrentView} />
+      <Navigation currentView={currentView} setView={setCurrentView} role={userRole} />
       <main className="flex-1 overflow-y-auto relative w-full">
         {/* Mobile Header */}
-        <div className="md:hidden bg-white p-4 flex justify-between items-center border-b border-gray-200 sticky top-0 z-10">
-            <h1 className="text-xl font-bold text-brand-pink">CampusCreator</h1>
-            <div className="w-8 h-8 bg-gray-200 rounded-full"></div>
+        <div className={`md:hidden p-4 flex justify-between items-center border-b sticky top-0 z-10 ${userRole === 'admin' ? 'bg-slate-900 border-slate-700 text-white' : 'bg-white border-gray-200'}`}>
+            <h1 className={`text-xl font-bold ${userRole === 'admin' ? 'text-indigo-400' : 'text-brand-pink'}`}>CampusCreator</h1>
+            <div className={`w-8 h-8 rounded-full ${userRole === 'admin' ? 'bg-indigo-500' : 'bg-gray-200'}`}></div>
         </div>
         
         {renderContent()}
