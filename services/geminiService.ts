@@ -2,11 +2,17 @@ import { GoogleGenAI, Type } from "@google/genai";
 import { GeneratedContent, Collaborator, SocialPost, AdminStats, User } from "../types";
 
 // Determine API URL based on environment
-// In Vercel (Production), relative path '/api' routes to Vercel Serverless Functions
-// In Local Development, it points to the dedicated Express server on port 3001
-const API_URL = (import.meta as any).env.PROD ? '/api' : 'http://localhost:3001/api';
+// We check window.location to see if we are running locally or in production (Vercel)
+const isLocal = typeof window !== 'undefined' && 
+    (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
+
+// If local, point to the dedicated backend server on port 3001
+// If production (Vercel), use relative path '/api' which routes to Serverless Functions
+const API_URL = isLocal ? 'http://localhost:3001/api' : '/api';
 
 // Initialize client-side fallback
+// Note: In a real app, never expose API_KEY in client-side code if possible. 
+// This is a fallback for the prototype if the backend is unreachable.
 const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
 
 /**
@@ -52,17 +58,21 @@ export const generatePersonas = async (topic: string): Promise<GeneratedContent[
       Return JSON.
     `;
 
-    const response = await ai.models.generateContent({
-      model: modelId,
-      contents: prompt,
-      config: {
-        responseMimeType: "application/json",
-        responseSchema: responseSchema,
-        temperature: 0.8
-      }
-    });
-
-    return response.text ? JSON.parse(response.text) : [];
+    try {
+        const response = await ai.models.generateContent({
+            model: modelId,
+            contents: prompt,
+            config: {
+                responseMimeType: "application/json",
+                responseSchema: responseSchema,
+                temperature: 0.8
+            }
+        });
+        return response.text ? JSON.parse(response.text) : [];
+    } catch (clientError) {
+        console.error("Client-side fallback also failed:", clientError);
+        return [];
+    }
   }
 };
 
